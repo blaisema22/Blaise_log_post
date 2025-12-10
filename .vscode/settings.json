@@ -1,0 +1,7 @@
+{
+    "json.format.keepLines": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.mouseWheelZoom": true,
+    "editor.wordWrap": "on"
+}
