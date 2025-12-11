@@ -14,11 +14,16 @@ export const authernticate = (req, res, next) => {
         next();
     })
 }
-export const uatherRole = (roles) => {
-    return (req, res, next) => {
-        if (!req.user || !roles.include(req.user.role)) {
-            // return res.status(200).json({})
-        }
-        next();
+export const isAdmin = (req, res, next) => {
+    if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admins only can do this action' });
     }
-}
+    next();
+};
+
+export const isAuthor = (req, res, next) => {
+    if (!req.user || req.user.role !== 'author') {
+        return res.status(403).json({ message: 'Authors only' });
+    }
+    next();
+};

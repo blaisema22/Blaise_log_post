@@ -4,29 +4,28 @@ import bcrypt from 'bcrypt'
 import { db } from '../config/db.js'
 //register user
 export const register = (req, res) => {
-    const { name, email, password, role } = req.body;
-    if (!name || !email || !password || !role) return res.status(400).json({ message: 'name, email, password and role are required' });
+        const { name, email, password, role } = req.body;
+        if (!name || !email || !password || !role) return res.status(400).json({ message: 'name, email, password and role are required' });
+        bcrypt.hash(password, 10, (err, hash) => {
+            if (err) return res.status(500).json({ err: 'Error while hashing the password' });
 
-    bcrypt.hash(password, 10, (err, hash) => {
-        if (err) return res.status(500).json({ err: 'Error while hashing the password' });
-
-        db.query("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)", [name, email, hash, role], (err, result) => {
-            if (err) {
-                // handle duplicate email (MySQL ER_DUP_ENTRY) or other DB errors
-                if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ message: 'email already exists' });
-                return res.status(500).json({ err: `register failed ${err}` });
-            }
-            return res.status(201).json({ message: 'User registered successfully' });
+            db.query("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)", [name, email, hash, role], (err, result) => {
+                if (err) {
+                    // handle duplicate email (MySQL ER_DUP_ENTRY) or other DB errors
+                    if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ message: 'email already exists' });
+                    return res.status(500).json({ err: `register failed ${err}` });
+                }
+                return res.status(201).json({ message: 'User registered successfully' });
+            });
         });
-    });
-
-}
+    }
     //login user
 export const login = (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: 'email and password are required' });
+    const { email, password, role } = req.body;
+    if (!email || !password || !role) return res.status(400).json({ message: 'email and password are required' });
 
-    db.query("SELECT * FROM users WHERE email = ?", [email], (err, result) => {
+
+    db.query("SELECT * FROM users WHERE email = ? && role=?", [email, role], (err, result) => {
         if (err) return res.status(500).json({ err: `user login error occured ${err}` });
         if (!result || result.length === 0) return res.status(404).json({ err: `user not found` });
 
@@ -40,4 +39,5 @@ export const login = (req, res) => {
             return res.json({ message: "Successfully logged in", token: token });
         });
     });
+
 }

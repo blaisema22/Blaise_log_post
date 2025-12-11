@@ -9,6 +9,7 @@ import post from './routes/postsRoutes.js'
 import tage from './routes/tagsRoutes.js'
 
 
+
 //express app
 const app = express();
 //midel ware
@@ -28,7 +29,8 @@ dotenv.config();
 //Routes
 //register & ligion
 app.use("/api/auths", authRoutes)
-    //created categories
+
+//created categories
 app.use("/api/categories", categories)
     //create post
 app.use("/api/posts", post)
